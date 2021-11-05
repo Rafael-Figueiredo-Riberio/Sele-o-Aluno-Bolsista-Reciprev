@@ -1,0 +1,115 @@
+# Rotina para gerar gráficos de uma série temporal.
+# A serie temporal usada nesse programa mostra o ganho trimestral por ação
+# da empresa Johnson & Johnson, o período de observação inclui o primeiro
+# trimeste do ano 1960 até o quarto trimeste do ano 1980, assim temos 84
+# observações.
+# A série em questão foi tirada do livro "Robert H.Shumway; David S.Stoffer.
+# Time Series Analysis and Its Applications. Fourth Edition" e convertida para
+# um arquivo CSV.
+# Carregando o Arquivo
+Mydata <- read.csv2("Johnson_&_johnson.csv")
+# Print das 6 primeiras linhas
+head(Mydata)
+# Ajustes no Data Frame
+# O Data Frame Mydata tem 21 linhas e 5 colunas (21x5)
+# Para conseguirmos plotar o ganho da ação ao longo do tempo temos que transfor-
+# mar esse Data Frame para que ele fique no formato (84x2)
+# assim ficaremos com duas colunas uma para os anos e a outra para o ganho da 
+# ação, que mais tarde serão os eixos do nosso gráfico.
+# Um ano tem 4 trimestres 
+# O primeiro trimestre será representado por 0.25
+# O segundo trimestre será representado por 0.50
+# O terceiro trimestre será representado por 0.75
+# O quarto trimestre será representado por 1.00
+# A ideia aqui é conseguir reconhercer o ano e o trimestre através de números
+# 1960.25 representa o primeiro trimeste de 1960
+# 1965.50 representa o segundo trimeste de 1965
+# 1970.75 representa o terceiro trimeste de 1970
+# 1975.00 representa o quarto trimeste de 1974
+# Primeiramente irei "quebrar" o Mydata em 4 Data Frames 
+# Mydata_0.25 que irá conter todos os valores referentes ao primeiro Trimestre
+# dos anos analisados
+Mydata_0.25 <- Mydata[,c(-3,-4,-5)]
+# Mydata_0.50 que irá conter todos os valores referentes ao segundo Trimestre
+# dos anos analisados
+Mydata_0.50 <- Mydata[,c(-2,-4,-5)]
+# Mydata_0.75 que irá conter todos os valores referentes ao terceiro Trimestre
+# dos anos analisados
+Mydata_0.75 <- Mydata[,c(-2,-3,-5)]
+# e por fim Mydata_1.0 que irá conter todos os valores referentes ao quarto 
+# Trimestre dos anos analisados
+Mydata_1.0 <- Mydata[,c(-2,-3,-4)]
+# Adicionando a legenda criada (0.25, 0.50, 0,75, 1.0)
+for(i in 1:21){
+  Mydata_0.25[i,1] <- Mydata_0.25[i,1] + 0.25
+  Mydata_0.50[i,1] <- Mydata_0.50[i,1] + 0.50
+  Mydata_0.75[i,1] <- Mydata_0.75[i,1] + 0.75
+  Mydata_1.0[i,1] <- Mydata_1.0[i,1] + 1
+}
+#Criando um Data frame 84 x 2, preechido com zeros
+Mydata_2 <- data.frame(x = rep(as.numeric(0), 84) , y = rep(as.numeric(0), 84))
+#Preenchimento da coluna[1] (x), com os nossos anos.
+for (i in 1:84){
+  Mydata_2[i,1] <- 1960 + (0.25*i)
+}
+#Preenchimento da coluna[2] (y), com os respectivos valores do ganho da ação.
+#preencendo os anos que terminam em .25
+e = 1
+for (a in 0:3){
+  for (b in 1:21){
+    d = (b+(21*a))
+    if(Mydata_2[d,1] == Mydata_0.25[e,1]){
+      Mydata_2[d,2] <- Mydata_0.25[e,2]
+      e <- e + 1
+    }
+  }
+}
+#preencendo os anos que terminam em .50
+e = 1
+for (a in 0:3){
+  for (b in 1:21){
+    d = (b+(21*a))
+    if(Mydata_2[d,1] == Mydata_0.50[e,1]){
+      Mydata_2[d,2] <- Mydata_0.50[e,2]
+      e <- e + 1
+    }
+  }
+}
+#preencendo os anos que terminam em .75
+e = 1
+for (a in 0:3){
+  for (b in 1:21){
+    d = (b+(21*a))
+    if(Mydata_2[d,1] == Mydata_0.75[e,1]){
+      Mydata_2[d,2] <- Mydata_0.75[e,2]
+      e <- e + 1
+    }
+  }
+}
+#preencendo os anos que terminam em .0
+e = 1
+for (a in 0:3){
+  for (b in 1:21){
+    d = (b+(21*a))
+    if(Mydata_2[d,1] == Mydata_1.0[e,1]){
+      Mydata_2[d,2] <- Mydata_1.0[e,2]
+      e <- e + 1
+    }
+  }
+}
+#Agora com o Data Frame Mydata_2 completamente preenchido podemos plotar o
+#gráfico dessa série temporal
+plot(Mydata_2$x, 
+     Mydata_2$y, 
+     type = "o",
+     xlab = "Tempo", 
+     ylab = "Ganho trimestral por Ação",
+     main = "Johnson & Johson")
+
+
+
+
+
+
+
+
